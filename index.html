@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Twittler</title>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <style>
+    </style>
   </head>
   <body>
-    <script>
+    <button type="button" class = "button">Click Me!</button>
 
+    <script>
+    
       $(document).ready(function(){
+
+
         var $body = $('body');
         $body.html('');
 
@@ -15,13 +22,35 @@
         while(index >= 0){
           var tweet = streams.home[index];
           var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
+
+          var d = new Date();
+          var time = d.toLocaleTimeString();
+          var month = d.getMonth()+1;
+          var day = d.getDate();
+
+          var output = d.getFullYear() + '/' +
+              (month<10 ? '0' : '') + month + '/' +
+              (day<10 ? '0' : '') + day;
+
+          $tweet.text(output + " " + time + ' @' + tweet.user + ': ' + tweet.message);
           $tweet.appendTo($body);
+          //$tweet.insertAfter($".button");
           index -= 1;
+
+        function update() {
+          $.get("response.php", function(data) {
+            $("tweet.text").html(data);
+            window.setTimeout(update, 1000);
+          });
+        }          
+        scheduleNextTweet()
+        update();
+
         }
 
       });
 
     </script>
+
   </body>
 </html>
