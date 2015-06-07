@@ -7,10 +7,24 @@
 window.streams = {};
 streams.home = [];
 streams.users = {};
-streams.users.shawndrost = [];
+streams.users.shawndrost = ["Shawn Drost"];
+// streams.users.shawndrost.name = "Shawn Drost";
 streams.users.sharksforcheap = [];
+// streams.users.sharksforcheap.name = "Sharks For Cheap";
 streams.users.mracus = [];
+// streams.users.mracus.name = "Marcus";
 streams.users.douglascalhoun = [];
+// streams.users.douglascalhoun.name = "Douglas Calhoun";
+
+// streams.users.shawndrost = ["Shawn Drost"];
+// //streams.users.shawndrost.name = "Shawn Drost";
+// streams.users.sharksforcheap = ["Sharks For Cheap"];
+// //streams.users.sharksforcheap.name = "Sharks For Cheap";
+// streams.users.mracus = [ "Marcus"];
+// //streams.users.mracus.name = "Marcus";
+// streams.users.douglascalhoun = ["Douglas Calhoun"];
+// //streams.users.douglascalhoun.name = "Douglas Calhoun";
+
 window.users = Object.keys(streams.users);
 
 // utility function for adding tweets to our data structures
@@ -31,16 +45,21 @@ var opening = ['just', '', '', '', '', 'ask me how i', 'completely', 'nearly', '
 var verbs = ['drank', 'drunk', 'deployed', 'got', 'developed', 'built', 'invented', 'experienced', 'fought off', 'hardened', 'enjoyed', 'developed', 'consumed', 'debunked', 'drugged', 'doped', 'made', 'wrote', 'saw'];
 var objects = ['my', 'your', 'the', 'a', 'my', 'an entire', 'this', 'that', 'the', 'the big', 'a new form of'];
 var nouns = ['cat', 'koolaid', 'system', 'city', 'worm', 'cloud', 'potato', 'money', 'way of life', 'belief system', 'security system', 'bad decision', 'future', 'life', 'pony', 'mind'];
-var tags = ['#techlife', '#burningman', '#sf', 'but only i know how', 'for real', '#sxsw', '#ballin', '#omg', '#yolo', '#magic', '', '', '', ''];
+var tags = ['#techlife', '#burningman', '#sf', '#butOnlyIKnowHow', '#forReal', '#sxsw', '#ballin', '#omg', '#yolo', '#magic', '', '', '', ''];
 
 var randomMessage = function(){
-  return [randomElement(opening), randomElement(verbs), randomElement(objects), randomElement(nouns), randomElement(tags)].join(' ');
+  return randomElement(opening) + " " + randomElement(verbs) + " " + randomElement(objects) + " " + randomElement(nouns) + " <a style='color: #00CCFF; font-weight: bold;'>" + randomElement(tags) + "</a>"
+  // [randomElement(opening), randomElement(verbs), randomElement(objects), randomElement(nouns), randomElement(tags)].join(' ');
 };
 
 // generate random tweets on a random schedule
 var generateRandomTweet = function(){
   var tweet = {};
   tweet.user = randomElement(users);
+  person = tweet.user;
+  streamusers = streams.users;
+
+  tweet.name = streamusers.person;
   tweet.message = randomMessage();
   tweet.created_at = new Date();
   addTweet(tweet);
