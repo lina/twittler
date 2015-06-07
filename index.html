@@ -1,56 +1,147 @@
 <!DOCTYPE html>
-<html>
+<html lang = "en">
   <head>
-    <title>Twittler</title>
+    <title>Twittler </title>
+    <link href = "twittler.css" rel = "stylesheet" type="text/css"/>
     <script src="jquery.js"></script>
-    <script src="data_generator.js"></script>
-    <style>
-    </style>
+    <script src="data_generator.js"></script>     
   </head>
   <body>
-    <button type="button" class = "button">Click Me!</button>
-
-    <script>
-    
+    <header><div>
+      <center><img src = "macaw.png" alt = "Twittler"><h1>Twittler</h1></center>
+    </div></header>
+    <section>
+      <center><div id = "show-new-tweets-here"></div>
+      <div id ="remove-filter"> See all users </button></div></center>
+    </section>    
+    <div class = "tweets-wrapper">
+      <center><section id = "tweet-container"> </section></center>
+    </div>
+    <script type = "text/javascript">      
       $(document).ready(function(){
+        var newTweets = (function() {
 
-
-        var $body = $('body');
-        $body.html('');
-
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-
-          var d = new Date();
-          var time = d.toLocaleTimeString();
-          var month = d.getMonth()+1;
-          var day = d.getDate();
-
-          var output = d.getFullYear() + '/' +
-              (month<10 ? '0' : '') + month + '/' +
-              (day<10 ? '0' : '') + day;
-
-          $tweet.text(output + " " + time + ' @' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          //$tweet.insertAfter($".button");
-          index -= 1;
-
-        function update() {
-          $.get("response.php", function(data) {
-            $("tweet.text").html(data);
-            window.setTimeout(update, 1000);
-          });
-        }          
-        scheduleNextTweet()
-        update();
-
-        }
-
+          function showTweets(index) {
+            var tweet = streams.home[index];          
+            var d = new Date();
+            var time = d.toLocaleTimeString();
+            var month = d.getMonth()+1, monthStr;
+            if (month === 1) 
+              monthStr = "Jan";
+            else if (month === 2)
+              monthStr = "Feb";
+            else if (month === 3) 
+              monthStr = "Mar";
+            else if (month === 4) 
+              monthStr = "Apr";
+            else if (month === 5) 
+              monthStr = "May";
+            else if (month === 6) 
+              monthStr = "Jun";                                      
+            else if (month === 7)
+              monthStr = "Jul";
+            else if (month === 8) 
+              monthStr = "Aug";
+            else if (month === 9) 
+              monthStr = "Sep";
+            else if (month === 10) 
+              monthStr = "Oct";
+            else if (month === 11) 
+              monthStr = "Nov";
+            else if (month === 12) 
+              monthStr = "Dec"; 
+            var day = d.getDate();
+            var dateoutput = monthStr + " " + day;  
+            var $tweet = $('<div class = "tweet"><center>' 
+              + " " + "<a class='user'>@" + tweet.user 
+              + "</a> <a class = 'tweet-date'>&middot; " + dateoutput 
+              + " &middot; " + "<font size = 2>" 
+              + time + "</a> </font>" + "<p class = 'tweet-message'>" 
+              + tweet.message + "</p>" + "</center></div>");   
+            $tweet.prependTo($tweetContainer);            
+          }
+          function showNewTweets() {
+            for (var i = oldTweetCount; i < updatedTweetCount; i ++) {
+              showTweets(i);      
+            }
+            oldTweetCount = updatedTweetCount;
+            this.showFilteredUsers($('.user'));
+            $newTweetsHere.html(""); 
+          }
+          function pendingTweets() {
+            updatedTweetCount = countTweets();
+            if (updatedTweetCount > oldTweetCount) {
+              var hiddenTweetCount = updatedTweetCount - oldTweetCount, tweetWord;
+              if (hiddenTweetCount === 1)
+                tweetWord = "Tweet";
+              else
+                tweetWord = "Tweets";
+              $newTweetsHere.html(" <div class = 'showing-new-tweets'> View " + hiddenTweetCount + " new " + tweetWord + '<p></p></div>');
+              document.title = "(" + hiddenTweetCount + ") " + "Twittler";
+            }
+            setTimeout(function() {
+              pendingTweets();
+            }, 500)
+          }
+          function filterUsers(user){
+            var displayedTweets = this.currentTweets();
+            for (var j = 0; j < displayedTweets.length; j++) {
+              var userNow = displayedTweets.eq(j).find(".user").text(); 
+              if (userNow === user) {
+                displayedTweets.eq(j).addClass("filtered"); 
+              }else {
+                displayedTweets.eq(j).removeClass("filtered").slideUp();
+              }
+            }
+            $removeFilter.css("display", "block");
+          }
+          function showFilteredUsers(users){
+            users.click(function() {
+              var user = $(this).text();
+              newTweets.filterUsers(user);  
+            });
+          }
+          function removeFilter() {
+            $(".tweet").css("display", "block");
+            $removeFilter.css("display", "none");            
+          }
+          function countTweets() {
+            return streams.home.length;
+          }
+          function currentTweets(){
+            return $('.tweet');
+          }          
+          return {
+            countTweets: countTweets,
+            currentTweets: currentTweets,            
+            showTweets: showTweets,
+            showNewTweets: showNewTweets,
+            pendingTweets: pendingTweets,
+            filterUsers:filterUsers,
+            showFilteredUsers: showFilteredUsers,
+            removeFilter:removeFilter
+          };         
+        })();
+        var $tweetContainer = $("#tweet-container");
+        var $newTweetsHere = $("#show-new-tweets-here");
+        var $removeFilter = $("#remove-filter");   
+        var updatedTweetCount = 0;
+        var oldTweetCount = newTweets.countTweets();
+        var num = streams.home.length - 1;
+        while (num >= 0) {
+          var thisTweet = newTweets.showTweets(num);
+          num -= 1;
+        }     
+        newTweets.pendingTweets();
+        newTweets.showFilteredUsers($(".user"));
+        $newTweetsHere.click(function() {
+          newTweets.showNewTweets();
+          newTweets.removeFilter();
+        });
+        $removeFilter.click(function() {
+          newTweets.removeFilter();
+        });
       });
-
     </script>
-
   </body>
 </html>
